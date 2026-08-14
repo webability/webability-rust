@@ -1,6 +1,6 @@
 [package]
 name = "webability-rust"
-version = "0.0.1"
+version = "0.1.0"
 edition = "2021"
 license = "MIT"
 description = "Cliente oficial en Rust para la API pública de WebAbility (https://api.webability.info)."
