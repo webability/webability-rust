@@ -26,10 +26,13 @@ pub struct SendRequest {
     /// en templates_template bajo la cuenta que autentica el request — el
     /// servidor arma el correo con esa plantilla en vez de subject/html/text
     /// (que se ignoran si template viene). La personalización usa las vars
-    /// de `to`, igual que en el envío ad-hoc. El servidor valida que la
-    /// plantilla exista y esté activa ANTES de encolar el correo: si no,
-    /// send() devuelve Err con el error de la API (códigos 3025/3026), no un
-    /// envío "pending" fallido.
+    /// de `to`, sin ningún prefijo en los nombres — dentro del contenido de
+    /// la plantilla (Consola → Correos → Plantillas) se acceden como
+    /// {{vars>clave}}, no {{clave}} a secas (eso último solo aplica al envío
+    /// ad-hoc, sin template). El servidor valida que la plantilla exista y
+    /// esté activa ANTES de encolar el correo: si no, send() devuelve Err
+    /// con el error de la API (códigos 3025/3026), no un envío "pending"
+    /// fallido.
     pub template: String,
     pub subject: String,
     pub html: String,
