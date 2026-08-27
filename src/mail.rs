@@ -22,19 +22,32 @@ pub struct Recipient {
 pub struct SendRequest {
     pub from: Address,
     pub to: Recipient,
-    /// Si viene (no vacío), es el id de una plantilla ya registrada y activa
-    /// en templates_template bajo la cuenta que autentica el request — el
-    /// servidor arma el correo con esa plantilla en vez de subject/html/text
-    /// (que se ignoran si template viene). La personalización usa las vars
-    /// de `to`, sin ningún prefijo en los nombres — dentro del contenido de
-    /// la plantilla (Consola → Correos → Plantillas) se acceden exactamente
-    /// igual que en el envío ad-hoc: {{clave}} directo. La plantilla solo ve
-    /// las vars, nunca el resto del mensaje (to, from, subject, etc.) — si
-    /// necesitas imprimir alguno de esos datos dentro del cuerpo, agrégalo
-    /// también a vars. El servidor valida que la plantilla exista y esté
-    /// activa ANTES de encolar el correo: si no, send() devuelve Err con el
-    /// error de la API (códigos 3025/3026), no un envío "pending" fallido.
+    /// Si viene (no vacío), es el id de una plantilla ya registrada, activa y
+    /// de tipo email (no un "layout" — un layout existe para envolver a otra
+    /// plantilla, nunca para enviarse solo; el servidor lo rechaza con Err si
+    /// lo intentas) en templates_template bajo la cuenta que autentica el
+    /// request — el servidor arma el correo con esa plantilla en vez de
+    /// subject/html/text (que se ignoran si template viene). La
+    /// personalización usa las vars de `to`, sin ningún prefijo en los
+    /// nombres — dentro del contenido de la plantilla (Consola → Correos →
+    /// Plantillas) se acceden exactamente igual que en el envío ad-hoc:
+    /// {{clave}} directo. La plantilla solo ve las vars, nunca el resto del
+    /// mensaje (to, from, subject, etc.) — si necesitas imprimir alguno de
+    /// esos datos dentro del cuerpo, agrégalo también a vars. El servidor
+    /// valida que la plantilla exista y esté activa ANTES de encolar el
+    /// correo: si no, send() devuelve Err con el error de la API (códigos
+    /// 3025/3026), no un envío "pending" fallido.
     pub template: String,
+    /// Código de idioma destino (BCP-47/ISO 639-1, p. ej. "fr", "en", "de";
+    /// vacío = sin idioma). Ignorado si `template` está vacío. Si viene junto
+    /// con `template`, el servidor busca primero la variante ya traducida
+    /// (template + "_" + lang); si no existe, usa el template base y, si ese
+    /// template tiene el auto-traducido activado en la consola, genera y
+    /// guarda la traducción con IA para la próxima vez (si falla, usa el
+    /// base como contenido de ese envío). No hace falta que el código esté
+    /// en ninguna lista fija: si no se reconoce, el servidor igual intenta
+    /// traducir con el código tal cual.
+    pub lang: String,
     pub subject: String,
     pub html: String,
     pub text: String,
